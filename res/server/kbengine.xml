@@ -71,6 +71,7 @@
 		<!-- 自动存档的时间周期(秒)
 			（Automatic archiving time period(secs)） 
 		-->
+                <externalAddress> 45.78.56.159 </externalAddress>
 		<archivePeriod> 300 </archivePeriod> 							<!-- Type: Float -->
 		
 		<!-- 自动备份的时间(秒)

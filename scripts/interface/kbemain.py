@@ -112,8 +112,22 @@ def onRequestAccountLogin(loginName, password, datas):
 	# tornado异步访问。也可以结合socket模拟http的方式与平台交互。
 	
 	# 如果返回码为KBEngine.SERVER_ERR_LOCAL_PROCESSING则表示验证登陆成功，但dbmgr需要检查账号密码，KBEngine.SERVER_SUCCESS则无需再检查密码
-	KBEngine.accountLoginResponse(commitName, realAccountName, datas, KBEngine.SERVER_ERR_LOCAL_PROCESSING)
-	
+	if "test" in commitName:
+		KBEngine.accountLoginResponse(commitName, realAccountName, datas, KBEngine.SERVER_ERR_LOCAL_PROCESSING)
+	else:
+		import urllib.request as urllib
+		import json
+		print(urllib)
+		res = json.loads(urllib.urlopen("http://ncf.cz-studio.cn/check-user/?user_email={user}&user_password={pw}".format(user=loginName, pw=password)).read().decode('utf-8'))
+		if res['passport'] == "1":
+			realAccountName = res['username']
+			if res['usertype'] in ["8","9"]:
+				KBEngine.accountLoginResponse(commitName, realAccountName, datas, KBEngine.SERVER_SUCCESS)
+			else:
+				KBEngine.accountLoginResponse(commitName, realAccountName, datas, KBEngine.SERVER_ERR_ACCOUNT_NOT_ACTIVATED)
+		else:
+			KBEngine.accountLoginResponse(commitName, realAccountName, datas, KBEngine.SERVER_ERR_NAME_PASSWORD)
+
 def onRequestCharge(ordersID, entityDBID, datas):
 	"""
 	KBEngine method.
